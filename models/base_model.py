@@ -24,7 +24,7 @@ class BaseModel():
 
     def to_dict(self):
         """ Returns a dictionary with the attributes of the class """
-        dictionary = self.__dict__
+        dictionary = self.__dict__.copy()
         dictionary['__class__'] = self.name
         dictionary['created_at'] = self.created_at.isoformat()
         dictionary['updated_at'] = self.updated_at.isoformat()
