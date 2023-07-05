@@ -24,13 +24,13 @@ class FileStorage():
     def save(self):
         """ saves the data """
         json_data = json.dumps(self.__objects)
-        with open(self.__file_path, 'w') as file:
+        with open(self.__file_path, 'w', encoding="UTF-8") as file:
             file.write(json_data)
 
     def reload(self):
         """ Tries reloading """
         try:
-            with open(self.__file_path, 'r') as file:
+            with open(self.__file_path, 'r', encoding="UTF-8") as file:
                 self.__objects = json.load(file)
                 for key, value in serialized_objects.items():
                     class_name, obj_id = key.split('.')
