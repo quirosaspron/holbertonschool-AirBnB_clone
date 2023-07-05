@@ -2,6 +2,7 @@
 """ BaseModel module """
 import uuid
 from datetime import datetime
+from models.engine.file_storage import storage
 
 
 class BaseModel():
@@ -19,6 +20,7 @@ class BaseModel():
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
+            storage.new(self)
 
     def __str__(self):
         """ This will display some text """
@@ -28,6 +30,7 @@ class BaseModel():
     def save(self):
         """ Updates the time when modified """
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         """ Returns a dictionary with the attributes of the class """
