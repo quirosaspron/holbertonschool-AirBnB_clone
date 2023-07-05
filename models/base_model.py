@@ -18,7 +18,7 @@ class BaseModel():
         return("[{}] ({}) {}".format(self.name, self.id, self.__dict__))
 
     def save(self):
-        """ In case the object is modified this will change the updated at time """
+        """ Updates the time when modified """
         self.updated_at = datetime.now()
 
     def to_dict(self):
