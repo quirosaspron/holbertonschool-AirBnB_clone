@@ -4,6 +4,11 @@ import json
 
 
 class FileStorage():
+    """TestFileStorage test of suits for the engine
+    testing save, all, reload and new methods
+    Args:
+        unittest (): Propertys for unit testing
+    """
     __file_path = "file.json"
     __objects = {}
 
