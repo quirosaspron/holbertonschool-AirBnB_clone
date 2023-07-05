@@ -30,12 +30,11 @@ class FileStorage():
     def reload(self):
         """ Tries reloading """
         try:
-            with open(self.__file_path, 'r', encoding="UTF-8") as file:
-                self.__objects = json.load(file)
-                for key, value in serialized_objects.items():
-                    class_name, obj_id = key.split('.')
-                    class_ = eval(class_name)
-                    obj = class_(**value)
-                    self.__objects[key] = obj
+            with open(self.__file_path, "r", encoding="UTF-8") as json_file:
+                json_object = json.load(json_file)
+                for key, attributes_dict in json_object.items():
+                    class_type = eval(attributes_dict["__class__"])
+                    obj = class_type(**attributes_dict)
+                    self.new(obj)
         except FileNotFoundError:
             pass
