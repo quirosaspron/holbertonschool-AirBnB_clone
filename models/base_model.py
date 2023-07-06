@@ -1,41 +1,52 @@
 #!/usr/bin/python3
-""" BaseModel module """
-import uuid
+"""Class BaseModel"""
+
 from datetime import datetime
-from __init__ import storage
+import uuid
+import models
 
 
-class BaseModel():
-    """ The base for the other classes """
+class BaseModel:
+    """Base Model Class"""
     def __init__(self, *args, **kwargs):
-        """ Initializer method """
-        if kwargs:
-            for key, value in kwargs.items():
-                if key == '__class__':
-                    continue
-                if key in ['created_at', 'updated_at']:
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                setattr(self, key, value)
-        else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = self.created_at
-            storage.new(self)
+        """__init__ of class Basemodel"""
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = self.created_at
+        for name, value in kwargs.items():
+            """searches dict for keys"""
+            if name == "__class__":
+                continue
+            setattr(self, name, value)
+        if "id" not in kwargs:
+            models.storage.new(self)
+
+    def __setattr__(self, name, value):
+        """Maintain correct types for non-string attributes."""
+        if name in ['created_at', 'updated_at']:
+            if isinstance(value, str):
+                try:
+                    value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+                except ValueError:
+                    raise AttributeError("Invalid value: ({}) for name: ({})"
+                                         .format(value, name))
+        super().__setattr__(name, value)
 
     def __str__(self):
-        """ This will display some text """
-        return("[{}] ({}) {}".format(self.__class__.__name__,
-                                     self.id, self.__dict__))
+        """Description of the class class name self.id self.__dict__"""
+        return "[{}] ({}) {}".format(self.__class__.__name__,
+                                     self.id, self.__dict__)
 
     def save(self):
-        """ Updates the time when modified """
+        """Update the public instance update_at with the current_time"""
         self.updated_at = datetime.now()
-        storage.save()
+        models.storage.save()
 
     def to_dict(self):
-        """ Returns a dictionary with the attributes of the class """
-        dictionary = self.__dict__.copy()
-        dictionary['__class__'] = self.__class__.__name__
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
-        return dictionary
+        """Returns a dictionary with key and values of instance"""
+        d = {}
+        d.update(self.__dict__)
+        d['created_at'] = d['created_at'].isoformat()
+        d['updated_at'] = d['updated_at'].isoformat()
+        d['__class__'] = self.__class__.__name__
+        return d
