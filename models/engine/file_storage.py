@@ -3,14 +3,6 @@
 FileStorage class module
 """
 import json
-import models
-from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
 
 
 class FileStorage:
@@ -43,7 +35,7 @@ class FileStorage:
         Args:
          *obj (dictionary): object
         """
-        key = obj.class.name + "." + obj.id
+        key = obj.__class__.__name__ + "." + obj.id
         self.objects[key] = obj
 
     def save(self):
