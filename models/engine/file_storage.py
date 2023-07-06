@@ -1,39 +1,73 @@
 #!/usr/bin/python3
-""" serializes and deserializes instances from and to JSON file """
+"""
+FileStorage class module
+"""
 import json
+import models
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
-class FileStorage():
-    """TestFileStorage test of suits for the engine
-    testing save, all, reload and new methods
-    Args:
-        unittest (): Propertys for unit testing
+class FileStorage:
     """
-    __file_path = "file.json"
-    __objects = {}
+    Private class attributes:
+     file_path (string): path to the JSON file (ex: file.json)
+     objects (dictionary): empty at the start, but it will be updated by
+     new() method to store all objects
+
+    Public instance methods:
+     all(): returns the private class attribute objects
+     new(obj): update the private class attribute objects
+     save(): serializes the private class attribute objects to a JSON file
+     reload(): if the JSON file exists, deserializes the JSON file to the
+     private class attribute objects
+    """
+    file_path = "file.json"
+    objects = {}
 
     def all(self):
-        """ Return objects dictionary """
-        return self.__objects
+        """
+        Returns private class attribute objects that stores all objects
+        """
+        return self.objects
 
     def new(self, obj):
-        """ a new dictionary """
-        key = obj.__class__.__name__ + "." + obj.id
-        self.__objects[key] = obj
+        """
+        Update the private class attribute objects that stores all objects
+
+        Args:
+         *obj (dictionary): object
+        """
+        key = obj.class.name + "." + obj.id
+        self.objects[key] = obj
 
     def save(self):
-        """ saves the data """
-        json_data = json.dumps(self.__objects)
-        with open(self.__file_path, 'w', encoding="UTF-8") as file:
-            file.write(json_data)
+        """
+        Serializes private class attribute objects, that stores all objects,
+        to a JSON file: objects -> JSON file.
+        """
+        dic = {key: value.to_dict() for key, value in self.objects.items()}
+        with open(self.file_path, "w", encoding="UTF-8") as json_file:
+            json.dump(dic, json_file)
 
     def reload(self):
-        """ Tries reloading """
+        """
+        If JSON file exists, deserializes the JSON file to private class
+        attribute objects, that stores all objects: JSON file -> objects
+        """
         try:
-            with open(self.__file_path, "r", encoding="UTF-8") as json_file:
+            with open(self.file_path, "r", encoding="UTF-8") as json_file:
                 json_object = json.load(json_file)
+                # json_object contains several objects (attributes_dict)
                 for key, attributes_dict in json_object.items():
-                    class_type = eval(attributes_dict["__class__"])
+                    # Identify class
+                    class_type = eval(attributes_dict["class__"])
+                    # Create object
                     obj = class_type(**attributes_dict)
                     self.new(obj)
         except FileNotFoundError:
